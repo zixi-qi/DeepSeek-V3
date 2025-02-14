@@ -6,7 +6,7 @@
   <img src="https://github.com/deepseek-ai/DeepSeek-V2/blob/main/figures/logo.svg?raw=true" width="60%" alt="DeepSeek-V3" />
 </div>
 <hr>
-<div align="center" style="display: inline-block; vertical-align: middle; line-height: 1;">
+<div align="center" style="line-height: 1;">
   <a href="https://www.deepseek.com/"><img alt="Homepage"
     src="https://github.com/deepseek-ai/DeepSeek-V2/blob/main/figures/badge.svg?raw=true"/></a>
   <a href="https://chat.deepseek.com/"><img alt="Chat"
