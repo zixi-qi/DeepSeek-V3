@@ -233,7 +233,7 @@ DeepSeek-V3 can be deployed locally using the following hardware and open-source
 3. **LMDeploy**: Enables efficient FP8 and BF16 inference for local and cloud deployment.
 4. **TensorRT-LLM**: Currently supports BF16 inference and INT4/8 quantization, with FP8 support coming soon.
 5. **vLLM**: Support DeepSeek-V3 model with FP8 and BF16 modes for tensor parallelism and pipeline parallelism.
-6. **LightLLM**: Supports single-node or multi-node deployment with DeepSeek-V3 FP8 and BF16.
+6. **LightLLM**: Supports efficient single-node or multi-node deployment for FP8 and BF16.
 7. **AMD GPU**: Enables running the DeepSeek-V3 model on AMD GPUs via SGLang in both BF16 and FP8 modes.
 8. **Huawei Ascend NPU**: Supports running DeepSeek-V3 on Huawei Ascend devices.
 
@@ -331,7 +331,7 @@ For comprehensive step-by-step instructions on running DeepSeek-V3 with LMDeploy
 
 ### 6.6 Inference with LightLLM (recommended)
 
-[LightLLM](https://github.com/ModelTC/lightllm/tree/main) LightLLM v1.0.1 supports single-machine and multi-machine tensor parallelism deployment for DeepSeek-R1 (FP8/BF16), achieving state-of-the-art performance. For more details, please refer to [LightLLM instructions](https://lightllm-en.readthedocs.io/en/latest/getting_started/quickstart.html). Additionally, LightLLM offers PD-disaggregation deployment for DeepSeek-V2, and the implementation of PD-disaggregation for DeepSeek-V3 is in development.
+[LightLLM](https://github.com/ModelTC/lightllm/tree/main) LightLLM v1.0.1 supports single-machine and multi-machine tensor parallel deployment for DeepSeek-R1 (FP8/BF16) and provides mixed-precision deployment, with more quantization modes continuously integrated. For more details, please refer to [LightLLM instructions](https://lightllm-en.readthedocs.io/en/latest/getting_started/quickstart.html). Additionally, LightLLM offers PD-disaggregation deployment for DeepSeek-V2, and the implementation of PD-disaggregation for DeepSeek-V3 is in development.
 
 ### 6.7 Recommended Inference Functionality with AMD GPUs
 
