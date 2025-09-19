@@ -170,3 +170,7 @@ cython_debug/
 .vscode/*
 
 .DS_Store
+
+# Mini model files
+/mini_model/model.safetensors
+/mini_model/model.safetensors.index.json
