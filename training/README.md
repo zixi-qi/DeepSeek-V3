@@ -143,9 +143,9 @@ Key training parameters (with defaults):
 - `bf16`: true (use bfloat16 precision)
 - `gradient_checkpointing`: true (save memory during training)
 
-### FP8 Training (Experimental)
+### FP8 Training
 
-The training script now supports FP8 quantization for both weights and activations:
+The training script supports FP8 quantization for reduced memory usage:
 
 - `--use_fp8`: Enable FP8 quantization
 - `--fp8_weight_quant`: Quantize weights to FP8 (default: true)
@@ -156,7 +156,15 @@ Example:
 python train.py --use_fp8 --fp8_weight_quant --fp8_activation_quant
 ```
 
-Note: FP8 training simulates quantization effects during training by quantizing and dequantizing values, allowing gradients to flow while modeling the impact of reduced precision.
+**Important**: The FP8 implementation has been updated to fix memory issues. The new version:
+- Uses gradient scaling instead of actual FP8 tensor conversion during training
+- Avoids creating additional memory copies that caused OOM errors
+- Provides better memory efficiency without the overhead of FP8 tensor operations
+
+If you still encounter memory issues, use the minimal memory training script:
+```bash
+./train_tiny_minimal.sh
+```
 
 ## Model Architecture
 
@@ -292,29 +300,46 @@ pip install transformers==4.38.0 accelerate==0.27.0
 
 #### Out of Memory (OOM)
 
+**Note**: The original FP8 implementation had memory issues. Use the updated version below.
+
 1. **Use the Tiny Model**:
 ```bash
 python train.py --model_config_path ../mini_model/config_tiny.json
 ```
 
-2. **Reduce Batch Size**:
+2. **Minimal Memory Training**:
 ```bash
-python train.py --per_device_train_batch_size 1
+./train_tiny_minimal.sh  # Batch size 1, gradient accumulation 16
 ```
 
-3. **Enable Gradient Checkpointing**:
+3. **Reduce Batch Size**:
+```bash
+python train.py --per_device_train_batch_size 1 --gradient_accumulation_steps 16
+```
+
+4. **Enable Gradient Checkpointing**:
 ```bash
 python train.py --gradient_checkpointing
 ```
 
-4. **Use FP8 Quantization**:
+5. **Use Updated FP8 Quantization**:
 ```bash
-python train.py --use_fp8 --fp8_weight_quant --fp8_activation_quant
+./train_tiny_fp8.sh  # Uses improved FP8 implementation
 ```
 
-5. **CPU Offloading**:
+6. **CPU Offloading**:
 ```bash
 accelerate launch --mixed_precision bf16 --cpu_offload train.py
+```
+
+7. **Reduce Sequence Length**:
+```bash
+python train.py --block_size 128  # Instead of 512
+```
+
+8. **Disable Pin Memory**:
+```bash
+python train.py --dataloader_pin_memory False
 ```
 
 #### Model Not Training (AssertionError)

@@ -16,8 +16,8 @@ python train.py \
     --fp8_weight_quant \
     --fp8_activation_quant \
     --num_train_epochs 3 \
-    --per_device_train_batch_size 16 \
-    --gradient_accumulation_steps 2 \
+    --per_device_train_batch_size 2 \
+    --gradient_accumulation_steps 8 \
     --learning_rate 5e-4 \
     --warmup_ratio 0.1 \
     --logging_steps 10 \
@@ -25,7 +25,7 @@ python train.py \
     --save_steps 500 \
     --bf16 \
     --gradient_checkpointing \
-    --block_size 512 \
-    --dataloader_num_workers 4
+    --block_size 256 \
+    --dataloader_num_workers 2
 
 echo "FP8 training complete!"

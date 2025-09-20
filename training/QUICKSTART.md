@@ -55,13 +55,19 @@ tail -f outputs/deepseek_v3_mini/*/events.out.tfevents.*
 
 ### Out of Memory?
 ```bash
-# Use tiny model + small batch + gradient checkpointing + FP8
+# Option 1: Minimal memory training
+./train_tiny_minimal.sh
+
+# Option 2: Manual minimal settings
 python train.py \
     --model_config_path ../mini_model/config_tiny.json \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 32 \
     --gradient_checkpointing \
-    --use_fp8
+    --block_size 128
+
+# Option 3: Updated FP8 (fixed memory issues)
+./train_tiny_fp8.sh
 ```
 
 ### Training Not Starting?
