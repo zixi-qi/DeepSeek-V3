@@ -1,0 +1,45 @@
+# Core dependencies for training mini DeepSeek V3
+# Tested on Python 3.10, CUDA 12.1+
+
+# PyTorch - adjust based on your CUDA version
+# For CUDA 12.1: pip install torch --index-url https://download.pytorch.org/whl/cu121
+torch>=2.0.0,<2.2.0
+
+# Transformers and training libraries
+transformers>=4.36.0,<4.40.0
+accelerate>=0.25.0,<0.30.0
+datasets>=2.14.0,<3.0.0
+
+# Tokenization
+sentencepiece>=0.1.99
+tokenizers>=0.14.0,<0.16.0
+
+# Data and configuration
+protobuf>=3.20.0,<4.0.0
+pyyaml>=6.0
+pandas>=1.5.0,<2.0.0
+pyarrow>=14.0.0
+
+# Training utilities
+tqdm>=4.65.0
+tensorboard>=2.14.0,<2.16.0
+numpy>=1.24.0,<2.0.0
+
+# For mixed precision and optimization
+packaging>=21.0
+
+# Optional but recommended for experiment tracking
+wandb>=0.15.0
+
+# Optional for additional optimizations
+bitsandbytes>=0.41.0  # For 8-bit Adam optimizer
+ninja>=1.11.0  # For faster JIT compilation
+
+# Development and debugging tools
+ipython>=8.0.0
+jupyter>=1.0.0
+matplotlib>=3.5.0
+
+# System monitoring
+py3nvml>=0.2.7  # For GPU monitoring
+psutil>=5.9.0  # For system monitoring

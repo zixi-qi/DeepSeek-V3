@@ -435,7 +435,8 @@ class MoEGate(nn.Module):
 
         ### select top-k experts
         if self.topk_method == "noaux_tc":
-            assert not self.training
+            # Note: Commenting out training restriction for experimental training
+            # assert not self.training
             scores_for_choice = scores.view(bsz * seq_len, -1) + self.e_score_correction_bias.unsqueeze(0)
             group_scores = (
                 scores_for_choice.view(bsz * seq_len, self.n_group, -1).topk(2, dim=-1)[0].sum(dim = -1)
@@ -525,11 +526,61 @@ class DeepseekV3MoE(nn.Module):
         topk_idx, topk_weight = self.gate(hidden_states)
         hidden_states = hidden_states.view(-1, hidden_states.shape[-1])
         flat_topk_idx = topk_idx.view(-1)
-        if not self.training:
+        
+        if self.training:
+            # Training mode: use a simpler MoE computation
+            y = self._moe_forward_train(hidden_states, topk_idx, topk_weight).view(*orig_shape)
+        else:
+            # Inference mode: use the optimized no_grad version
             y = self.moe_infer(hidden_states, topk_idx, topk_weight).view(*orig_shape)
+            
         if self.config.n_shared_experts is not None:
             y = y + self.shared_experts(identity)
         return y
+
+    def _moe_forward_train(self, x, topk_ids, topk_weight):
+        """
+        Training-mode forward pass for MoE layer.
+        This is a simplified version that works with autograd.
+        """
+        batch_size = x.shape[0]
+        hidden_dim = x.shape[1]
+        num_experts = len(self.experts) if self.ep_size == 1 else self.experts_per_rank
+        
+        # Initialize output tensor
+        output = torch.zeros_like(x)
+        
+        # Process each token
+        for i in range(batch_size):
+            token_output = torch.zeros(hidden_dim, dtype=x.dtype, device=x.device)
+            
+            # Apply top-k experts for this token
+            for k in range(topk_ids.shape[1]):
+                expert_idx = topk_ids[i, k].item()
+                weight = topk_weight[i, k]
+                
+                # Skip if expert index is out of range
+                if expert_idx >= num_experts:
+                    continue
+                
+                # Get the expert
+                if self.ep_size > 1:
+                    actual_expert_idx = expert_idx + self.ep_rank * self.experts_per_rank
+                    if actual_expert_idx >= len(self.experts) or self.experts[actual_expert_idx] is None:
+                        continue
+                    expert = self.experts[actual_expert_idx]
+                else:
+                    if expert_idx >= len(self.experts) or self.experts[expert_idx] is None:
+                        continue
+                    expert = self.experts[expert_idx]
+                
+                # Forward through expert and accumulate weighted output
+                expert_out = expert(x[i:i+1])  # Process single token
+                token_output += weight * expert_out.squeeze(0)
+            
+            output[i] = token_output
+        
+        return output
 
     @torch.no_grad()
     def moe_infer(self, x, topk_ids, topk_weight):
